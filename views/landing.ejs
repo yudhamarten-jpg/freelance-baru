@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freelance Baru - Platform Setoran Gmail Profesional</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #111;
+      --bg-card2: #1a1a1a;
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark: #5b21b6;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #1e1e2e;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ─── Navbar ─── */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: rgba(10, 10, 10, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple-light), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .navbar .nav-links { display: flex; gap: 16px; align-items: center; }
+    .navbar .nav-links a {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-member {
+      background: var(--purple);
+      color: #fff;
+    }
+    .btn-member:hover { background: var(--purple-dark); }
+    .btn-admin {
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-admin:hover { border-color: var(--purple); color: var(--purple-light); }
+
+    /* ─── Hero ─── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .hero .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--purple-light);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--purple-light), #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero-buttons a {
+      padding: 14px 36px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    .btn-hero-primary {
+      background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+    }
+    .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(124, 58, 237, 0.5); }
+    .btn-hero-secondary {
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+    .btn-hero-secondary:hover { border-color: var(--purple); color: var(--purple-light); }
+
+    /* ─── Stats ─── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      padding: 40px 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .stat-item { text-align: center; }
+    .stat-item .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple-light), #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-item .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ─── Features ─── */
+    .features {
+      padding: 60px 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .features h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s;
+    }
+    .feature-card:hover { border-color: var(--purple); transform: translateY(-4px); }
+    .feature-card .icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: rgba(124, 58, 237, 0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+    .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .feature-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ─── Steps ─── */
+    .steps {
+      padding: 60px 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .steps h2 { text-align: center; font-size: 2rem; margin-bottom: 40px; }
+    .steps-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      position: relative;
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin: 0 auto 16px;
+    }
+    .step-card h3 { margin-bottom: 8px; }
+    .step-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ─── CTA ─── */
+    .cta {
+      text-align: center;
+      padding: 60px 24px 80px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .cta h2 { font-size: 2rem; margin-bottom: 16px; }
+    .cta p { color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
+    .cta a {
+      display: inline-block;
+      padding: 14px 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+      transition: all 0.3s;
+    }
+    .cta a:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(124, 58, 237, 0.5); }
+
+    /* ─── Footer ─── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* ─── Floating Discord ─── */
+    .discord-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #5865F2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(88, 101, 242, 0.4);
+      cursor: pointer;
+      z-index: 200;
+      transition: all 0.3s;
+      animation: pulse 2s infinite;
+    }
+    .discord-float:hover { transform: scale(1.1); }
+    .discord-float svg { width: 28px; height: 28px; fill: #fff; }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(88, 101, 242, 0.4); }
+      50% { box-shadow: 0 4px 35px rgba(88, 101, 242, 0.7); }
+    }
+
+    /* ─── Mobile ─── */
+    @media (max-width: 640px) {
+      .navbar { padding: 12px 16px; }
+      .navbar .logo { font-size: 1.2rem; }
+      .nav-links a { padding: 6px 12px; font-size: 0.8rem; }
+      .hero { padding: 40px 16px 30px; }
+      .hero h1 { font-size: 1.8rem; }
+      .hero p { font-size: 0.95rem; }
+      .stats-bar { gap: 20px; padding: 20px 16px; }
+      .stat-item .stat-num { font-size: 1.5rem; }
+      .features, .steps { padding: 40px 16px; }
+      .discord-float { width: 48px; height: 48px; bottom: 16px; right: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">⚡ FreelanceBaru</div>
+    <div class="nav-links">
+      <a href="/member-login" class="btn-member">Masuk Member</a>
+      <a href="/admin-login" class="btn-admin">Admin</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="badge">🚀 Platform Aktif & Terpercaya 2026</div>
+    <h1>Ubah Akun Gmail<br>Jadi <span>Penghasilan Nyata!</span></h1>
+    <p>Platform setoran Gmail profesional #1 di Indonesia. Sistem transparan dengan verifikasi manual, proses akun 1-2 hari, dan pencairan dana 1-2 menit setelah disetujui.</p>
+    <div class="hero-buttons">
+      <a href="/member-register" class="btn-hero-primary">🚀 Daftar Gratis</a>
+      <a href="/member-login" class="btn-hero-secondary">Masuk Akun</a>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-num"><%= stats.members %>+</div>
+      <div class="stat-label">Member Aktif</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><%= stats.setoran %>+</div>
+      <div class="stat-label">Email Disetor</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">99%</div>
+      <div class="stat-label">Tingkat Sukses</div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="features">
+    <h2>Kenapa Memilih Kami?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">✅</div>
+        <h3>Verifikasi Manual</h3>
+        <p>Setiap setoran dicek langsung oleh tim kami. 100% transparan, tanpa pemotongan sepihak.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⚡</div>
+        <h3>Proses 1-2 Hari</h3>
+        <p>Akun Gmail diproses admin dalam estimasi 1-2 hari agar pengecekan tetap rapi dan aman.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📋</div>
+        <h3>Riwayat Lengkap</h3>
+        <p>Pantau semua status email secara real-time. Rekam jejak ACC dan Ditolak tercatat rapi.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📋</div>
+        <h3>Copy-Paste Massal</h3>
+        <p>Ratusan email berantakan? Tempel semua sekaligus. Sistem cerdas kami langsung merapikannya.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">👥</div>
+        <h3>Program Referral</h3>
+        <p>Ajak teman dan dapatkan bonus komisi setiap kali teman berhasil melakukan setoran.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">💰</div>
+        <h3>Pencairan 1-2 Menit</h3>
+        <p>Setelah akun disetujui, pencairan dana ke e-wallet atau rekening diproses sekitar 1-2 menit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Steps -->
+  <section class="steps">
+    <h2>3 Langkah Super Gampang</h2>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h3>Daftar Akun</h3>
+        <p>Buat akun member, verifikasi dengan OTP, lalu masuk ke dashboard untuk mulai menyetor Gmail.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h3>Setor Gmail</h3>
+        <p>Paste akun Gmail sesuai format. Sistem akan merapikan input sebelum dikirim ke admin.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h3>Tunggu & Cairkan</h3>
+        <p>Akun diproses admin 1-2 hari. Setelah ACC, pencairan dana diproses sekitar 1-2 menit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Siap Mulai Hasilkan Uang dari Gmail?</h2>
+    <p>Daftar gratis, tidak ada biaya apapun. Mulai setoran pertamamu hari ini!</p>
+    <a href="/member-register">Daftar Gratis Sekarang</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 FreelanceBaru — Platform Setoran Gmail Profesional</p>
+  </footer>
+
+  <!-- Floating Discord -->
+  <a href="https://discord.gg/VhmgYdgxV" target="_blank" class="discord-float" title="Join Discord">
+    <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+  </a>
+
+  <script>
+    // Update server time
+    async function updateTime() {
+      try {
+        const res = await fetch('/api/server-time');
+        const data = await res.json();
+      } catch (e) {}
+    }
+    setInterval(updateTime, 30000);
+  </script>
+</body>
+</html>

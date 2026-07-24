@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Member — FreelanceBaru</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #111;
+      --bg-card2: #1a1a1a;
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark: #5b21b6;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #1e1e2e;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 50;
+      overflow-y: auto;
+    }
+    .sidebar .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple-light), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 32px;
+    }
+    .sidebar .user-info {
+      padding: 16px;
+      background: var(--bg-card2);
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .sidebar .user-info .name { font-weight: 700; font-size: 1rem; }
+    .sidebar .user-info .email { color: var(--text-muted); font-size: 0.8rem; margin-top: 2px; }
+    .sidebar .user-info .ref {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--purple-light);
+      background: rgba(124,58,237,0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .sidebar nav { flex: 1; }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .sidebar nav a:hover, .sidebar nav a.active {
+      background: rgba(124,58,237,0.1);
+      color: var(--purple-light);
+    }
+    .sidebar .logout-btn {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(239,68,68,0.3);
+      color: var(--danger);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .sidebar .logout-btn:hover { background: rgba(239,68,68,0.1); }
+
+    /* Main */
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      padding: 32px;
+    }
+    .main .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .main .topbar .server-time {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .main .topbar .server-time .label { font-weight: 700; color: var(--purple-light); }
+
+    /* Status Badge */
+    .setoran-status {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: inline-block;
+    }
+    .setoran-open { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    .setoran-closed { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+
+    /* Stats Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .stat-card .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+    .stat-card .stat-value { font-size: 2rem; font-weight: 800; }
+    .stat-card .stat-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Tab Content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Forms */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card h3 { margin-bottom: 16px; font-size: 1.05rem; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--purple); }
+    .btn {
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,0.4); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      text-align: left;
+      padding: 12px 8px;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .badge-pending { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .badge-accepted { background: rgba(16,185,129,0.15); color: var(--success); }
+    .badge-denied { background: rgba(239,68,68,0.15); color: var(--danger); }
+    .badge-selesai { background: rgba(16,185,129,0.15); color: var(--success); }
+
+    .table-wrap { overflow-x: auto; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      z-index: 300;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .toast-success { border-color: var(--success); color: var(--success); }
+    .toast-error { border-color: var(--danger); color: var(--danger); }
+
+    /* Discord Float */
+    .discord-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #5865F2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(88,101,242,0.4);
+      z-index: 200;
+      transition: all 0.3s;
+    }
+    .discord-float:hover { transform: scale(1.1); }
+    .discord-float svg { width: 26px; height: 26px; fill: #fff; }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 16px;
+        gap: 8px;
+        align-items: center;
+      }
+      .sidebar .logo { margin-bottom: 0; font-size: 1.2rem; }
+      .sidebar .user-info { display: none; }
+      .sidebar nav { display: flex; gap: 4px; flex-wrap: wrap; }
+      .sidebar nav a { padding: 8px 12px; font-size: 0.8rem; }
+      .sidebar .logout-btn { font-size: 0.8rem; padding: 8px 14px; }
+      .main { margin-left: 0; padding: 20px 16px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">⚡ FreelanceBaru</div>
+      <div class="user-info">
+        <div class="name"><%= member.username %></div>
+        <div class="email"><%= member.email %></div>
+        <div class="ref">🔗 <%= member.referral_code %></div>
+      </div>
+      <nav>
+        <a href="#" class="active" onclick="switchTab('beranda')">🏠 Beranda</a>
+        <a href="#" onclick="switchTab('setor')">📤 Setor Email</a>
+        <a href="#" onclick="switchTab('riwayat')">📋 Riwayat</a>
+        <a href="#" onclick="switchTab('pencairan')">💰 Pencairan</a>
+        <a href="#" onclick="switchTab('data-email')">📧 Data Email</a>
+        <a href="#" onclick="switchTab('profil')">👤 Profil</a>
+      </nav>
+      <a href="/member-logout" class="logout-btn">🚪 Logout</a>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="topbar">
+        <h1 style="font-size:1.4rem;">Dashboard Member</h1>
+        <div class="server-time">
+          🕐 <span class="label">Server:</span> <span id="serverTime"><%= serverTime.date %> — <%= serverTime.time %></span>
+        </div>
+      </div>
+
+      <!-- TAB: Beranda -->
+      <div id="tab-beranda" class="tab-content active">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Setoran</div>
+            <div class="stat-value"><%= stats.totalSetoran %></div>
+            <div class="stat-sub">Email disetor</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">PENDING</div>
+            <div class="stat-value" style="color:var(--warning);"><%= stats.pending %></div>
+            <div class="stat-sub">Menunggu verifikasi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">ACCEPTED</div>
+            <div class="stat-value" style="color:var(--success);"><%= stats.accepted %></div>
+            <div class="stat-sub">Disetujui</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">DENIED</div>
+            <div class="stat-value" style="color:var(--danger);"><%= stats.denied %></div>
+            <div class="stat-sub">Ditolak</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Saldo</div>
+            <div class="stat-value" style="color:var(--purple-light);">Rp <%= member.total_earnings.toLocaleString('id-ID') %></div>
+            <div class="stat-sub">Siap dicairkan</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Referral Bonus</div>
+            <div class="stat-value" style="color:var(--purple-light);">Rp <%= member.referral_earnings.toLocaleString('id-ID') %></div>
+            <div class="stat-sub">Dari referral</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <% if (isSetoranOpen) { %>
+            <span class="setoran-status setoran-open">🟢 SETORAN BUKA</span>
+          <% } else { %>
+            <span class="setoran-status setoran-closed">🔴 SETORAN TUTUP</span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- TAB: Setor Email -->
+      <div id="tab-setor" class="tab-content">
+        <div class="card">
+          <h3>📤 Setor Email Baru</h3>
+          <% if (isSetoranOpen) { %>
+            <form id="formSetor">
+              <div class="form-group">
+                <label>Daftar Email (satu per baris)</label>
+                <textarea name="emails" placeholder="email1@gmail.com&#10;email2@gmail.com&#10;email3@gmail.com" required></textarea>
+              </div>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:16px;">
+                Harga per email: <strong style="color:var(--purple-light);">Rp <%= hargaPerEmail.toLocaleString('id-ID') %></strong>
+              </p>
+              <button type="submit" class="btn btn-primary">🚀 Kirim Setoran</button>
+            </form>
+          <% } else { %>
+            <p style="color:var(--danger);">🔴 Setoran sedang ditutup. Silakan cek kembali nanti.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- TAB: Riwayat -->
+      <div id="tab-riwayat" class="tab-content">
+        <div class="section-title">📋 Riwayat Setoran</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Jumlah Email</th>
+                <th>Status</th>
+                <th>Alasan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% riwayatSetoran.forEach(s => { %>
+                <tr>
+                  <td><%= new Date(s.created_at).toLocaleString('id-ID') %></td>
+                  <td><%= s.jumlah_email %></td>
+                  <td><span class="badge badge-<%= s.status %>"><%= s.status.toUpperCase() %></span></td>
+                  <td style="color:var(--text-muted);"><%= s.alasan || '-' %></td>
+                </tr>
+              <% }) %>
+              <% if (riwayatSetoran.length === 0) { %>
+                <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px;">Belum ada setoran</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Pencairan -->
+      <div id="tab-pencairan" class="tab-content">
+        <div class="section-title">💰 Pencairan Dana</div>
+        
+        <div class="card">
+          <h3>Saldo Saat Ini: <span style="color:var(--purple-light);">Rp <%= member.total_earnings.toLocaleString('id-ID') %></span></h3>
+          <% if (member.total_earnings > 0) { %>
+            <button class="btn btn-primary" onclick="requestPencairan()" style="margin-top:12px;">💸 Cairkan Sekarang</button>
+          <% } else { %>
+            <p style="color:var(--text-muted);margin-top:8px;">Belum ada saldo yang bisa dicairkan.</p>
+          <% } %>
+        </div>
+
+        <div class="table-wrap" style="margin-top:24px;">
+          <table>
+            <thead>
+              <tr><th>Tanggal</th><th>Jumlah</th><th>Metode</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <% riwayatPencairan.forEach(p => { %>
+                <tr>
+                  <td><%= new Date(p.created_at).toLocaleString('id-ID') %></td>
+                  <td>Rp <%= p.jumlah.toLocaleString('id-ID') %></td>
+                  <td><%= p.metode %></td>
+                  <td><span class="badge badge-<%= p.status === 'selesai' ? 'accepted' : 'pending' %>"><%= p.status.toUpperCase() %></span></td>
+                </tr>
+              <% }) %>
+              <% if (riwayatPencairan.length === 0) { %>
+                <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px;">Belum ada pencairan</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Data Email -->
+      <div id="tab-data-email" class="tab-content">
+        <div class="section-title">📧 Data Email Diterima</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Username</th><th>Password</th><th>Diterima</th></tr>
+            </thead>
+            <tbody>
+              <% dataEmails.forEach(d => { %>
+                <tr>
+                  <td><%= d.username %></td>
+                  <td><%= d.password %></td>
+                  <td style="color:var(--text-muted);"><%= new Date(d.diterima_at).toLocaleString('id-ID') %></td>
+                </tr>
+              <% }) %>
+              <% if (dataEmails.length === 0) { %>
+                <tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:32px;">Belum ada data email</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Profil -->
+      <div id="tab-profil" class="tab-content">
+        <div class="card">
+          <h3>👤 Edit Profil</h3>
+          <form method="POST" action="/member-update-profil">
+            <div class="form-group">
+              <label>Nama Discord</label>
+              <input type="text" name="discord_name" value="<%= member.discord_name %>" placeholder="nama#1234">
+            </div>
+            <div class="form-group">
+              <label>Nomor WhatsApp</label>
+              <input type="text" name="wa_number" value="<%= member.wa_number %>" placeholder="08123456789">
+            </div>
+            <div class="form-group">
+              <label>Nomor DANA</label>
+              <input type="text" name="dana_number" value="<%= member.dana_number %>" placeholder="08123456789">
+            </div>
+            <button type="submit" class="btn btn-primary">💾 Simpan Profil</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3>🔗 Kode Referral Kamu</h3>
+          <p style="font-size:1.2rem;font-weight:800;color:var(--purple-light);margin-bottom:8px;"><%= member.referral_code %></p>
+          <p style="color:var(--text-muted);font-size:0.9rem;">Bagikan kode ini ke teman. Kamu dapat bonus setiap teman berhasil setor!</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Floating Discord -->
+  <a href="https://discord.gg/VhmgYdgxV" target="_blank" class="discord-float" title="Join Discord">
+    <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+  </a>
+
+  <script>
+    // Tab switching
+    function switchTab(name) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    // Toast
+    function showToast(msg, type) {
+      const t = document.createElement('div');
+      t.className = 'toast toast-' + type;
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    // Form Setor
+    document.getElementById('formSetor')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emails = e.target.emails.value;
+      const res = await fetch('/member-setor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emails })
+      });
+      const data = await res.json();
+      showToast(data.message, data.success ? 'success' : 'error');
+      if (data.success) {
+        e.target.reset();
+        setTimeout(() => location.reload(), 1500);
+      }
+    });
+
+    // Request Pencairan
+    async function requestPencairan() {
+      if (!confirm('Yakin ingin mencairkan saldo?')) return;
+      const res = await fetch('/member-pencairan', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      const data = await res.json();
+      showToast(data.message, data.success ? 'success' : 'error');
+      if (data.success) setTimeout(() => location.reload(), 1500);
+    }
+
+    // Update server time
+    async function updateTime() {
+      try {
+        const res = await fetch('/api/server-time');
+        const data = await res.json();
+        document.getElementById('serverTime').textContent = data.date + ' — ' + data.time;
+      } catch(e) {}
+    }
+    setInterval(updateTime, 10000);
+  </script>
+</body>
+</html>

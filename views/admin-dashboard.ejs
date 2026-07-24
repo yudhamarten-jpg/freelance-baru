@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin — FreelanceBaru</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #111;
+      --bg-card2: #1a1a1a;
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark: #5b21b6;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #1e1e2e;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    .dashboard { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 260px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 50;
+      overflow-y: auto;
+    }
+    .sidebar .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple-light), #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .sidebar .admin-badge {
+      font-size: 0.75rem;
+      color: var(--danger);
+      font-weight: 700;
+      margin-bottom: 24px;
+      padding: 4px 10px;
+      background: rgba(239,68,68,0.15);
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .sidebar nav { flex: 1; }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .sidebar nav a:hover, .sidebar nav a.active {
+      background: rgba(124,58,237,0.1);
+      color: var(--purple-light);
+    }
+    .sidebar .logout-btn {
+      display: block; text-align: center;
+      padding: 12px; border-radius: 10px;
+      border: 1px solid rgba(239,68,68,0.3); color: var(--danger);
+      font-weight: 600; font-size: 0.9rem;
+    }
+    .sidebar .logout-btn:hover { background: rgba(239,68,68,0.1); }
+
+    .main {
+      flex: 1; margin-left: 260px; padding: 32px;
+    }
+    .main .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+    }
+    .main .topbar .server-time {
+      font-size: 0.85rem; color: var(--text-muted);
+      background: var(--bg-card); padding: 8px 16px;
+      border-radius: 8px; border: 1px solid var(--border);
+    }
+
+    /* Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px; margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px;
+    }
+    .stat-card .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+    .stat-card .stat-value { font-size: 2rem; font-weight: 800; }
+
+    /* Tabs */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .section-title {
+      font-size: 1.2rem; font-weight: 700; margin-bottom: 20px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    }
+
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px; margin-bottom: 24px;
+    }
+    .card h3 { margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 12px 16px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 1rem;
+      font-family: inherit; transition: border 0.2s;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: var(--purple);
+    }
+    .form-group select option { background: var(--bg-card); color: var(--text); }
+    .btn {
+      padding: 12px 28px; border-radius: 10px;
+      font-weight: 700; font-size: 0.95rem; cursor: pointer;
+      border: none; transition: all 0.3s;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,0.4); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { opacity: 0.9; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-warning { background: var(--warning); color: #000; }
+    .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th {
+      text-align: left; padding: 12px 8px;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-muted); font-weight: 600;
+      font-size: 0.8rem; text-transform: uppercase;
+    }
+    td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 6px; font-size: 0.75rem; font-weight: 700;
+    }
+    .badge-pending { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .badge-accepted { background: rgba(16,185,129,0.15); color: var(--success); }
+    .badge-denied { background: rgba(239,68,68,0.15); color: var(--danger); }
+    .badge-selesai { background: rgba(16,185,129,0.15); color: var(--success); }
+    .table-wrap { overflow-x: auto; }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7); z-index: 500;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px; width: 90%; max-width: 500px;
+    }
+    .modal h3 { margin-bottom: 16px; }
+    .modal .close {
+      float: right; background: none; border: none;
+      color: var(--text-muted); font-size: 1.5rem; cursor: pointer;
+    }
+    .modal .close:hover { color: var(--text); }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%; position: static; flex-direction: row;
+        flex-wrap: wrap; padding: 16px; gap: 8px; align-items: center;
+      }
+      .sidebar .logo { margin-bottom: 0; font-size: 1.2rem; }
+      .sidebar .admin-badge { margin-bottom: 0; }
+      .sidebar nav { display: flex; gap: 4px; flex-wrap: wrap; }
+      .sidebar nav a { padding: 8px 12px; font-size: 0.8rem; }
+      .sidebar .logout-btn { font-size: 0.8rem; padding: 8px 14px; }
+      .main { margin-left: 0; padding: 20px 16px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="logo">⚡ Admin Panel</div>
+      <span class="admin-badge">🔒 ADMIN</span>
+      <nav>
+        <a href="#" class="active" onclick="switchTab('beranda')">🏠 Beranda</a>
+        <a href="#" onclick="switchTab('setoran')">📤 Verifikasi Setoran</a>
+        <a href="#" onclick="switchTab('pencairan')">💰 Kelola Pencairan</a>
+        <a href="#" onclick="switchTab('email')">📧 Input Data Email</a>
+        <a href="#" onclick="switchTab('member')">👥 Kelola Member</a>
+        <a href="#" onclick="switchTab('settings')">⚙️ Pengaturan</a>
+      </nav>
+      <a href="/admin-logout" class="logout-btn">🚪 Logout</a>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1 style="font-size:1.4rem;">Dashboard Admin</h1>
+        <div class="server-time">
+          🕐 <span id="serverTime"><%= serverTime.date %> — <%= serverTime.time %></span>
+        </div>
+      </div>
+
+      <!-- TAB: Beranda -->
+      <div id="tab-beranda" class="tab-content active">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Member</div>
+            <div class="stat-value"><%= stats.totalMembers %></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Setoran</div>
+            <div class="stat-value"><%= stats.totalSetoran %></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">PENDING</div>
+            <div class="stat-value" style="color:var(--warning);"><%= stats.pending %></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">ACCEPTED</div>
+            <div class="stat-value" style="color:var(--success);"><%= stats.accepted %></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">DENIED</div>
+            <div class="stat-value" style="color:var(--danger);"><%= stats.denied %></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Bayaran</div>
+            <div class="stat-value" style="color:var(--purple-light);">Rp <%= stats.totalBayaran.toLocaleString('id-ID') %></div>
+          </div>
+        </div>
+
+        <form method="POST" action="/admin-reset-stats" style="display:inline;">
+          <button class="btn btn-warning btn-sm">🔄 Reset Statistik Harian</button>
+        </form>
+      </div>
+
+      <!-- TAB: Verifikasi Setoran -->
+      <div id="tab-setoran" class="tab-content">
+        <div class="section-title">📤 Verifikasi Setoran Member</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Member</th><th>Discord</th><th>WA</th><th>Email</th><th>Jumlah</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody>
+              <% setoran.forEach(s => { %>
+                <tr>
+                  <td>#<%= s.id %></td>
+                  <td><strong><%= s.username %></strong></td>
+                  <td><%= s.discord_name || s.member_discord || '-' %></td>
+                  <td><%= s.wa_number || s.member_wa || '-' %></td>
+                  <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="<%= s.email_usernames %>"><%= s.email_usernames %></td>
+                  <td><%= s.jumlah_email %></td>
+                  <td><span class="badge badge-<%= s.status %>"><%= s.status.toUpperCase() %></span></td>
+                  <td class="actions">
+                    <% if (s.status === 'pending') { %>
+                      <form method="POST" action="/admin-update-setoran" style="display:inline;">
+                        <input type="hidden" name="setoranId" value="<%= s.id %>">
+                        <input type="hidden" name="status" value="accepted">
+                        <input type="hidden" name="alasan" value="">
+                        <button class="btn btn-success btn-sm">✅ ACC</button>
+                      </form>
+                      <button class="btn btn-danger btn-sm" onclick="denySetoran(<%= s.id %>)">❌ Tolak</button>
+                    <% } else { %>
+                      <span style="color:var(--text-muted);font-size:0.8rem;"><%= s.status %></span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+              <% if (setoran.length === 0) { %>
+                <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:32px;">Tidak ada setoran</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Pencairan -->
+      <div id="tab-pencairan" class="tab-content">
+        <div class="section-title">💰 Kelola Pencairan</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Member</th><th>Jumlah</th><th>Metode</th><th>No Tujuan</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody>
+              <% pencairan.forEach(p => { %>
+                <tr>
+                  <td>#<%= p.id %></td>
+                  <td><strong><%= p.username %></strong></td>
+                  <td>Rp <%= p.jumlah.toLocaleString('id-ID') %></td>
+                  <td><%= p.metode %></td>
+                  <td><%= p.dana_number || p.nomor_tujuan || '-' %></td>
+                  <td><span class="badge badge-<%= p.status === 'selesai' ? 'accepted' : 'pending' %>"><%= p.status.toUpperCase() %></span></td>
+                  <td class="actions">
+                    <% if (p.status === 'pending') { %>
+                      <form method="POST" action="/admin-update-pencairan" style="display:inline;">
+                        <input type="hidden" name="pencairanId" value="<%= p.id %>">
+                        <input type="hidden" name="status" value="selesai">
+                        <button class="btn btn-success btn-sm">✅ Selesai</button>
+                      </form>
+                      <form method="POST" action="/admin-update-pencairan" style="display:inline;">
+                        <input type="hidden" name="pencairanId" value="<%= p.id %>">
+                        <input type="hidden" name="status" value="ditolak">
+                        <button class="btn btn-danger btn-sm">❌ Tolak</button>
+                      </form>
+                    <% } else { %>
+                      <span style="color:var(--text-muted);font-size:0.8rem;"><%= p.status %></span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+              <% if (pencairan.length === 0) { %>
+                <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:32px;">Belum ada pencairan</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Input Data Email -->
+      <div id="tab-email" class="tab-content">
+        <div class="card">
+          <h3>📧 Input Data Email untuk Member</h3>
+          <form method="POST" action="/admin-input-email">
+            <div class="form-group">
+              <label>Pilih Member</label>
+              <select name="member_id" required>
+                <option value="">-- Pilih Member --</option>
+                <% members.forEach(m => { %>
+                  <option value="<%= m.id %>"><%= m.username %> (<%= m.email %>)</option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Data Email (format: username:password, satu per baris)</label>
+              <textarea name="emails_data" placeholder="email1@gmail.com:password123&#10;email2@gmail.com:pass456" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">📤 Kirim Data Email</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB: Kelola Member -->
+      <div id="tab-member" class="tab-content">
+        <div class="section-title">👥 Daftar Member</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Username</th><th>Email</th><th>Discord</th><th>WA</th><th>DANA</th><th>Saldo</th><th>Referral</th><th>Bergabung</th><th>Aksi</th></tr>
+            </thead>
+            <tbody>
+              <% members.forEach(m => { %>
+                <tr>
+                  <td>#<%= m.id %></td>
+                  <td><strong><%= m.username %></strong></td>
+                  <td><%= m.email %></td>
+                  <td><%= m.discord_name || '-' %></td>
+                  <td><%= m.wa_number || '-' %></td>
+                  <td><%= m.dana_number || '-' %></td>
+                  <td>Rp <%= m.total_earnings.toLocaleString('id-ID') %></td>
+                  <td><%= m.referral_code %></td>
+                  <td style="font-size:0.8rem;color:var(--text-muted);"><%= new Date(m.created_at).toLocaleDateString('id-ID') %></td>
+                  <td>
+                    <form method="POST" action="/admin-delete-member" style="display:inline;" onsubmit="return confirm('Hapus member ini?')">
+                      <input type="hidden" name="memberId" value="<%= m.id %>">
+                      <button class="btn btn-danger btn-sm">🗑 Hapus</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Settings -->
+      <div id="tab-settings" class="tab-content">
+        <div class="card">
+          <h3>⚙️ Pengaturan Sistem</h3>
+          <form method="POST" action="/admin-update-settings">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+              <div class="form-group">
+                <label>Jam Buka Setoran</label>
+                <input type="time" name="open_time" value="<%= settings.openTime %>">
+              </div>
+              <div class="form-group">
+                <label>Jam Tutup Setoran</label>
+                <input type="time" name="close_time" value="<%= settings.closeTime %>">
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+              <div class="form-group">
+                <label>Harga per Email (Rp)</label>
+                <input type="number" name="harga_per_email" value="<%= settings.hargaPerEmail %>">
+              </div>
+              <div class="form-group">
+                <label>Bonus Referral (Rp)</label>
+                <input type="number" name="referral_bonus" value="<%= settings.referralBonus %>">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">💾 Simpan Pengaturan</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Deny Modal -->
+  <div class="modal-overlay" id="denyModal">
+    <div class="modal">
+      <button class="close" onclick="closeDeny()">✕</button>
+      <h3>❌ Tolak Setoran</h3>
+      <form method="POST" action="/admin-update-setoran">
+        <input type="hidden" name="setoranId" id="denySetoranId">
+        <input type="hidden" name="status" value="denied">
+        <div class="form-group">
+          <label>Alasan Penolakan</label>
+          <textarea name="alasan" required placeholder="Tulis alasan penolakan..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-danger">❌ Tolak</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(name) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function denySetoran(id) {
+      document.getElementById('denySetoranId').value = id;
+      document.getElementById('denyModal').classList.add('show');
+    }
+
+    function closeDeny() {
+      document.getElementById('denyModal').classList.remove('show');
+    }
+
+    // Server time
+    async function updateTime() {
+      try {
+        const res = await fetch('/api/server-time');
+        const data = await res.json();
+        document.getElementById('serverTime').textContent = data.date + ' — ' + data.time;
+      } catch(e) {}
+    }
+    setInterval(updateTime, 10000);
+  </script>
+</body>
+</html>

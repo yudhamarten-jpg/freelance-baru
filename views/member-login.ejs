@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Admin — FreelanceBaru</title>
+  <title>Login Member — FreelanceBaru</title>
   <style>
     :root {
       --bg: #0a0a0a;
       --bg-card: #111;
       --purple: #7c3aed;
+      --purple-light: #a78bfa;
       --purple-dark: #5b21b6;
       --text: #e2e8f0;
       --text-muted: #94a3b8;
       --border: #1e1e2e;
+      --success: #10b981;
       --danger: #ef4444;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -26,28 +28,44 @@
       justify-content: center;
       padding: 24px;
     }
-    .admin-container {
+    .login-container {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 40px;
       width: 100%;
-      max-width: 400px;
-      text-align: center;
+      max-width: 420px;
     }
-    .admin-container .icon { font-size: 3rem; margin-bottom: 12px; }
-    .admin-container h2 { font-size: 1.3rem; margin-bottom: 4px; }
-    .admin-container .subtitle { color: var(--text-muted); margin-bottom: 24px; font-size: 0.9rem; }
+    .login-container .logo {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--purple-light), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .login-container .subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      font-size: 0.9rem;
+    }
     .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
     .form-group input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 12px 16px;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 10px;
       color: var(--text);
       font-size: 1rem;
-      text-align: center;
       transition: border 0.2s;
     }
     .form-group input:focus {
@@ -70,6 +88,14 @@
       transform: translateY(-1px);
       box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
     }
+    .links {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .links a { color: var(--purple-light); }
+    .links a:hover { text-decoration: underline; }
+    .links span { color: var(--text-muted); }
     .alert {
       padding: 12px 16px;
       border-radius: 8px;
@@ -78,24 +104,34 @@
       font-weight: 600;
     }
     .alert-error { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
-    .back-link { display: block; text-align: center; margin-top: 20px; color: var(--text-muted); font-size: 0.85rem; }
+    .alert-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .back-link { display: block; text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 0.85rem; }
     .back-link:hover { color: var(--text); }
   </style>
 </head>
 <body>
-  <div class="admin-container">
-    <div class="icon">🔒</div>
-    <h2>Admin Panel</h2>
-    <div class="subtitle">Masukkan password admin</div>
+  <div class="login-container">
+    <div class="logo">⚡ FreelanceBaru</div>
+    <div class="subtitle">Login Member</div>
 
     <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+    <% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
 
-    <form method="POST" action="/admin-login">
+    <form method="POST" action="/member-login">
       <div class="form-group">
-        <input type="password" name="password" placeholder="Password Admin" required>
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Masukkan username" required autocomplete="off">
       </div>
-      <button type="submit" class="btn-submit">🔑 Masuk Admin</button>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Masukkan password" required>
+      </div>
+      <button type="submit" class="btn-submit">🔑 Masuk</button>
     </form>
+
+    <div class="links">
+      <span>Belum punya akun?</span> <a href="/member-register">Daftar di sini</a>
+    </div>
 
     <a href="/" class="back-link">← Kembali ke Beranda</a>
   </div>
