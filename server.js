@@ -1,6 +1,6 @@
 const express = require('express');
 const session = require('express-session');
-const SQLiteStore = require('connect-sqlite3')(session);
+
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const path = require('path');
